@@ -21,3 +21,9 @@ output "instance_id" {
 output "instance_public_ip" {
   value = try(module.ec2_instance.public_ip, null)
 }
+
+output "rds_master_secret_arn" {
+  value = module.db.db_instance_master_user_secret_arn
+}
+
+output "db_address" { value = module.db.db_instance_address }

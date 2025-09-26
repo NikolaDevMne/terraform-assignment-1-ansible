@@ -130,9 +130,59 @@ module "db_security_group" {
   )
 }
 
+resource "aws_iam_instance_profile" "ec2" {
+  name = "${var.name}-ec2-instance-profile"
+  role = aws_iam_role.ec2.name
+}
+
+# Trust policy for EC2
+data "aws_iam_policy_document" "ec2_trust" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "ec2" {
+  name               = "${var.name}-ec2-role"
+  assume_role_policy = data.aws_iam_policy_document.ec2_trust.json
+}
+
+# Read-only access to the specific RDS master secret
+data "aws_iam_policy_document" "read_rds_secret" {
+  statement {
+    sid    = "ReadRdsMasterSecret"
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+    ]
+    resources = [module.db.db_instance_master_user_secret_arn]
+  }
+}
+
+resource "aws_iam_policy" "read_rds_secret" {
+  name       = "${var.name}-read-rds-secret"
+  path       = "/"
+  policy     = data.aws_iam_policy_document.read_rds_secret.json
+  depends_on = [module.db] # ensure ARN is known
+}
+
+resource "aws_iam_role_policy_attachment" "attach_read_secret" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = aws_iam_policy.read_rds_secret.arn
+}
+
+
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "~> 6.0"
+  version = "~> 6.12"
 
   identifier = "${var.name}-db"
 
@@ -145,11 +195,12 @@ module "db" {
   family               = "mysql8.0"
   major_engine_version = "8.0"
 
-
   db_name  = "appdb"
   username = "admin"
-  password = var.db_password
-  port     = 3306
+
+  manage_master_user_password = true
+
+  port = 3306
 
   multi_az = false
 
@@ -168,7 +219,7 @@ module "db" {
 
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 5.6"
+  version = "~> 6.1.1"
 
   ami = data.aws_ami.ubuntu.id
 
@@ -183,6 +234,8 @@ module "ec2_instance" {
   vpc_security_group_ids = [module.ssh_security_group.security_group_id, module.http_security_group.security_group_id]
   key_name               = aws_key_pair.ssh.key_name
 
+  iam_instance_profile = aws_iam_instance_profile.ec2.name
+
   tags = merge(
     {
       "Project" = var.name
@@ -191,3 +244,4 @@ module "ec2_instance" {
     var.tags
   )
 }
+

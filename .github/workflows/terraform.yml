@@ -11,6 +11,10 @@ on:
 env:
   AWS_REGION: eu-central-1
 
+permissions:
+  id-token: write
+  contents: read    
+
 jobs:
   terraform_plan:
     name: Terraform Plan
@@ -28,7 +32,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -40,6 +43,13 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=tfplan
+      
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+          retention-days: 1
 
   terraform_apply:
     name: Terraform Apply
@@ -49,11 +59,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -66,6 +71,12 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan
+      
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: .
 
       - name: Terraform Apply
         run: terraform apply --auto-approve tfplan

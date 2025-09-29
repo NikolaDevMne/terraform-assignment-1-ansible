@@ -1,10 +1,11 @@
 terraform {
-  required_version = ">= 1.6.0"
+  required_version = ">= 1.11.0"
 
   backend "s3" {
     bucket       = "nikola-vujisic-tfstate-eu-central-1"
     key          = "env/dev/terraform.tfstate"
     region       = "eu-central-1"
+    encrypt      = true
     use_lockfile = true
   }
 

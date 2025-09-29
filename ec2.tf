@@ -1,8 +1,3 @@
-resource "aws_key_pair" "ssh" {
-  key_name   = "${var.name}-key"
-  public_key = file("~/.ssh/id_ed25519.pub")
-}
-
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 6.1.1"

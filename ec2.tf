@@ -13,7 +13,6 @@ module "ec2_instance" {
   create_eip = true
 
   vpc_security_group_ids = [module.ssh_security_group.security_group_id, module.http_security_group.security_group_id]
-  key_name               = aws_key_pair.ssh.key_name
 
   iam_instance_profile = aws_iam_instance_profile.ec2.name
 

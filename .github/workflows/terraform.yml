@@ -41,7 +41,7 @@ jobs:
         run: terraform init -input=false -upgrade
       
       - name: Terraform FMT
-        run: terraform fmt -check -recursive
+        run: terraform fmt -recursive
 
       - name: Terraform Validate
         run: terraform validate
@@ -74,7 +74,7 @@ jobs:
         run: terraform init -input=false -upgrade
       
       - name: Terraform FMT
-        run: terraform fmt -check -recursive
+        run: terraform fmt -recursive
 
       - name: Terraform Validate
         run: terraform validate

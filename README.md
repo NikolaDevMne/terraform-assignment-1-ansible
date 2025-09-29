@@ -101,7 +101,7 @@ terraform apply
 1. Push a feature branch and open a PR → checks + plan run automatically.
 2. Merge to `main` → plan + apply run and deploy the infra.
 
-### Destroy (manual)
+### Destroy
 1. GitHub → **Actions** → **Terraform Destroy** → **Run workflow**
 2. Enter `DESTROY` and run
 3. Review logs; infrastructure is torn down safely

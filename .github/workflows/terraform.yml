@@ -20,6 +20,7 @@ on:
 env:
   AWS_REGION: eu-central-1
   TERRAFORM_VERSION: 1.11.0
+  WORKING_DIR: infra/terraform
 
 permissions:
   id-token: write
@@ -48,16 +49,20 @@ jobs:
           terraform_version: ${{env.TERRAFORM_VERSION}}
 
       - name: Terraform Init
+        working-directory: ${{ env.WORKING_DIR }}
         run: terraform init -input=false -upgrade
       
       - name: Terraform FMT
+        working-directory: ${{ env.WORKING_DIR }}
         run: terraform fmt -recursive
 
       - name: Terraform Validate
+        working-directory: ${{ env.WORKING_DIR }}
         run: terraform validate
 
       - name: Terraform Plan
         id: plan
+        working-directory: ${{ env.WORKING_DIR }}
         run: terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
 
   terraform_apply:
@@ -81,17 +86,21 @@ jobs:
           terraform_version: ${{env.TERRAFORM_VERSION}}
 
       - name: Terraform Init
+        working-directory: ${{ env.WORKING_DIR }}
         run: terraform init -input=false -upgrade
       
       - name: Terraform FMT
+        working-directory: ${{ env.WORKING_DIR }}
         run: terraform fmt -recursive
 
       - name: Terraform Validate
+        working-directory: ${{ env.WORKING_DIR }}
         run: terraform validate
 
       - name: Terraform Plan
         id: plan
+        working-directory: ${{ env.WORKING_DIR }}
         run: terraform plan -out=tfplan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
 
       - name: Terraform Apply
-        run: terraform apply --auto-approve tfplan
+        run: terraform apply -auto-approve tfplan

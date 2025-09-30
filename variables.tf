@@ -27,3 +27,9 @@ variable "key_name" {
   type        = string
   default     = null
 }
+
+variable "ssh_public_key" {
+  type        = string
+  description = "Your OpenSSH public key (ssh-ed25519 or ssh-rsa)"
+  default     = ""
+}

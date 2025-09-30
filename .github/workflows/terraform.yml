@@ -58,7 +58,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan
+        run: terraform plan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
 
   terraform_apply:
     name: Terraform Apply
@@ -91,7 +91,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=tfplan -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}"
 
       - name: Terraform Apply
         run: terraform apply --auto-approve tfplan

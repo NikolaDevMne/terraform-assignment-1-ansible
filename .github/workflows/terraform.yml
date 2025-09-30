@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - '**/*.tf'
-      - 'infra/**'
+      - 'infra/*.tf'
       - '.github/workflows/terraform.yml'
 
   pull_request:

@@ -1,4 +1,3 @@
-# === Terraform ===
 # Local .terraform directories
 **/.terraform/*
 
@@ -24,10 +23,6 @@ override.tf.json
 *.plan
 *.tfplan
 
-# Module/Plugin caches
-.terraform.lock.hcl
-
-# === General ===
 # MacOS
 .DS_Store
 
@@ -51,3 +46,12 @@ override.tf.json
 # *.retry
 
 requirements.md
+
+.env
+*.env
+
+__pycache__/
+.venv/
+.retry
+
+infra/ansible/.cache/

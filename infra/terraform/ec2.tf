@@ -26,6 +26,7 @@ module "ec2_instance" {
     {
       "Project" = var.name
       "Managed" = "terraform"
+      "Role"    = "web"
     },
     var.tags
   )
